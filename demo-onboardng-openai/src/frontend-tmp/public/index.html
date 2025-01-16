@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Frontend Demo</h1>
+    <p>Enter a sentence to query the backend:</p>
+    <form id="query-form">
+      <input type="text" id="sentence" name="sentence" placeholder="Enter a sentence" required />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="response-container" class="response-container">
+      <h3>Response:</h3>
+      <p id="response-output"></p>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById("query-form");
+    const responseContainer = document.getElementById("response-container");
+    const responseOutput = document.getElementById("response-output");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const sentence = document.getElementById("sentence").value;
+      try {
+        const response = await fetch("/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ sentence }),
+        });
+        const data = await response.json();
+        if (data.response) {
+          responseOutput.textContent = data.response;
+        } else {
+          responseOutput.textContent = "No response received from backend.";
+        }
+        responseContainer.style.display = "block";
+      } catch (err) {
+        responseOutput.textContent = "Error communicating with the backend.";
+        responseContainer.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
