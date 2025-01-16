@@ -1,0 +1,85 @@
+---
+- name: Automate Demo Installation
+  hosts: localhost
+  vars:
+    # Variables for Kubernetes Secret
+    openai_api_key: "<OPENAI_API_KEY"
+    elastic_endpoint: "<ELASTIC_ENDPOINT>"
+    otel_exporter_otlp_endpoint: "<OTEL_EXPORTER_OTLP_ENDPOINT>"
+    otel_exporter_otlp_headers: "<OTEL_EXPORTER_OTLP_HEADERS>"
+    elastic_api_key: "ELASTIC_AP_KEY"
+    build_script: "./build-images.sh"
+    deploy_script: "./deploy-k8s.sh"
+
+  tasks:
+    # Step 1: Create the Kubernetes Secret
+    - name: Create Kubernetes secret
+      shell: |
+        kubectl create secret generic backend-config \
+          --from-literal="AZURE_OPENAI_ENDPOINT={{ azure_openai_endpoint }}" \
+          --from-literal="AZURE_OPENAI_API_KEY={{ azure_openai_api_key }}" \
+          --from-literal="AZURE_OPENAI_DEPLOYMENT_NAME={{ azure_openai_deployment_name }}" \
+          --from-literal="AZURE_OPENAI_API_VERSION={{ azure_openai_api_version }}" \
+          --from-literal="OPENAI_API_KEY={{ openai_api_key }}" \
+          --from-literal="ELASTIC_ENDPOINT={{ elastic_endpoint }}" \
+          --from-literal="OTEL_EXPORTER_OTLP_ENDPOINT={{ otel_exporter_otlp_endpoint }}" \
+          --from-literal="OTEL_EXPORTER_OTLP_HEADERS={{ otel_exporter_otlp_headers }}" \
+          --from-literal="ELASTIC_API_KEY={{ elastic_api_key }}"
+      args:
+        executable: /bin/bash
+
+    # Step 2: Install Cert-Manager
+    - name: Add Cert-Manager Helm repository
+      shell: |
+        helm repo add jetstack https://charts.jetstack.io --force-update
+      args:
+        executable: /bin/bash
+
+    - name: Install Cert-Manager CRDs
+      shell: |
+        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.crds.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Install Cert-Manager
+      shell: |
+        helm install cert-manager jetstack/cert-manager \
+          --namespace cert-manager \
+          --create-namespace \
+          --version v1.11.0
+      args:
+        executable: /bin/bash
+
+    # Step 3: Install OpenTelemetry Operator
+    - name: Add OpenTelemetry Helm repository
+      shell: |
+        helm repo add open-telemetry 'https://open-telemetry.github.io/opentelemetry-helm-charts' --force-update
+      args:
+        executable: /bin/bash
+
+    - name: Install OpenTelemetry Operator
+      shell: |
+        helm install opentelemetry-operator open-telemetry/opentelemetry-operator \
+          --set manager.collectorImage.repository="otel/opentelemetry-collector" \
+          --set manager.collectorImage.tag="latest"
+      args:
+        executable: /bin/bash
+
+    # Step 4: Build Images
+    - name: Build application images
+      shell: "{{ build_script }}"
+      args:
+        chdir: "{{ playbook_dir }}"
+
+    # Step 5: Deploy Applications
+    - name: Deploy applications to Kubernetes
+      shell: "{{ deploy_script }}"
+      args:
+        chdir: "{{ playbook_dir }}"
+
+    # Step 6: Add Annotations to Backend Deployment
+    - name: Add annotations to backend deployment
+      shell: |
+        kubectl patch deployment backend --type=json -p='[{"op": "add", "path": "/spec/template/metadata/annotations", "value": {"instrumentation.opentelemetry.io/inject-python": "opentelemetry-operator-system/elastic-instrumentation"}}]'
+      args:
+        executable: /bin/bash%     
