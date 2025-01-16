@@ -162,55 +162,11 @@ http://localhost:8080
 
 
 
-### 4. Access the Frontend Application
-
-#### Using NodePort:
-
-To verify that the frontend application is running, you can use one of the following methods:
-1. Retrieve the NodePort and the external IP of the frontend service:
-   ```
-   kubectl get svc frontend-service
-   ```
-   Example output:
-
-   ```
-   NAME              TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-   frontend-service  NodePort   10.109.137.45    <none>        80:30080/TCP     5m
-   
-   ```
-
-2. Access the frontend using the node’s IP address and NodePort:
-
-•	Replace <node-ip> with the external IP of your node.
-•	Replace <node-port> with the NodePort value (e.g., 30080 in the example above).
-•	Open your browser and navigate to:
-
-```
-http://<node-ip>:<node-port>
-```
-
-#### Using Port forwarding:
 
 
-1.	Forward port 8080 on your local machine to the service’s port 80 in the cluster:
+### **Troubleshooting**
 
-```
-kubectl port-forward svc/frontend-service 8080:80
-```
-
-2.	Open your browser and navigate to:
-
-```
-http://localhost:8080
-```
-
-
-
-**Troubleshooting**
-
-​	•	**Cert-Manager Issues**:
-
-​	•	If you encounter errors with Cert-Manager, ensure its CRDs are installed:
+​	•	**Cert-Manager Issues**: If you encounter errors with Cert-Manager, ensure its CRDs are installed:
 
 
 ```
@@ -219,16 +175,8 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/do
 
 
 
-​	•	**Helm Repository Errors**:
+​	•	**Helm Repository Errors**: if Helm fails to add or update repositories, ensure you have internet access and correct repository URLs.
 
-​	•	If Helm fails to add or update repositories, ensure you have internet access and correct repository URLs.
+​	•	**Playbook Execution Fails**:  Review the playbook output to identify the error. Ensure all required tools (kubectl, helm, ansible) are installed and correctly configured.
 
-​	•	**Playbook Execution Fails**:
-
-​	•	Review the playbook output to identify the error.
-
-​	•	Ensure all required tools (kubectl, helm, ansible) are installed and correctly configured.
-
-​	•	**OpenTelemetry Operator Installation Issues**:
-
-​	•	Ensure dependencies like Cert-Manager are installed and verify the Helm chart values.
+​	•	**OpenTelemetry Operator Installation Issues**:  Ensure dependencies like Cert-Manager are installed and verify the Helm chart values.
