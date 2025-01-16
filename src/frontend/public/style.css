@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f1f5; /* Inspired by Elastic's soft colors */
+    color: #1e2025; /* Contrast with background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #1e4bd7; /* Elastic's blue */
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    color: #757575;
+}
+
+form {
+    margin: 1.5rem 0;
+}
+
+input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #1e4bd7; /* Elastic's blue */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1b3a94; /* Darker Elastic blue */
+}
+
+.big-message {
+    font-size: 1.5rem;
+    color: #da552f; /* Elastic's orange */
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
