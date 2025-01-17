@@ -2,9 +2,11 @@
 
 
 
-# Demo goal
+# DEMO GOAL
 
 The purpose of this demo is to practice semantic search and build an end-to-end solution that involves web crawling, data indexing, microservices development, and auto-instrumentation using OpenTelemetry. Additionally, the demo will integrate OpenAI’s LLM (Large Language Model) to create a **Retrieval-Augmented Generation (RAG)** application.
+
+![](https://github.com/albdimanuel-elastic/demo-onboarding/blob/main/images/demo-flowdiagram.png)
 
 **Step-by-Step Overview**
 
@@ -61,8 +63,6 @@ The purpose of this demo is to practice semantic search and build an end-to-end 
 ​	•	This will ensure end-to-end observability, allowing for monitoring and troubleshooting of the application.
 
 
-
-![](https://github.com/albdimanuel-elastic/demo-onboarding/blob/main/images/demo-flowdiagram.png)
 
 # Web Crawler and mapping updates
 
