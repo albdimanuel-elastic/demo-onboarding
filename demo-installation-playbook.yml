@@ -11,6 +11,7 @@
     build_script: "./build-images.sh"
     deploy_script: "./deploy-k8s.sh"
 
+
   tasks:
     # Step 1: Create the Kubernetes Secret
     - name: Create Kubernetes secret
@@ -51,17 +52,34 @@
         executable: /bin/bash
 
     # Step 3: Install OpenTelemetry Operator
+    - name: Create namespace for OpenTelemetry Operator
+      shell: |
+        kubectl create namespace opentelemetry-operator-system
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+
+    - name: Create secret for OpenTelemetry Operator
+      shell: |
+        kubectl create secret generic elastic-secret-otel \
+          --namespace opentelemetry-operator-system \
+          --from-literal=elastic_endpoint='{{ elastic_endpoint }}' \
+          --from-literal=elastic_api_key='{{ elastic_api_key }}'
+      args:
+        executable: /bin/bash
+
     - name: Add OpenTelemetry Helm repository
       shell: |
         helm repo add open-telemetry 'https://open-telemetry.github.io/opentelemetry-helm-charts' --force-update
       args:
         executable: /bin/bash
 
-    - name: Install OpenTelemetry Operator
+    - name: Install OpenTelemetry Operator with kube stack
       shell: |
-        helm install opentelemetry-operator open-telemetry/opentelemetry-operator \
-          --set manager.collectorImage.repository="otel/opentelemetry-collector" \
-          --set manager.collectorImage.tag="latest"
+        helm install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
+          --namespace opentelemetry-operator-system \
+          --values 'https://raw.githubusercontent.com/elastic/opentelemetry/refs/heads/8.16/resources/kubernetes/operator/helm/values.yaml' \
+          --version '0.3.3'
       args:
         executable: /bin/bash
 
@@ -82,4 +100,4 @@
       shell: |
         kubectl patch deployment backend --type=json -p='[{"op": "add", "path": "/spec/template/metadata/annotations", "value": {"instrumentation.opentelemetry.io/inject-python": "opentelemetry-operator-system/elastic-instrumentation"}}]'
       args:
-        executable: /bin/bash%     
+        executable: /bin/bash%      
