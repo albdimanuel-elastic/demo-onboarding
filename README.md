@@ -2,7 +2,7 @@
 
 
 
-# DEMO GOAL
+# # Centered Title DEMO GOAL
 
 The purpose of this demo is to practice semantic search and build an end-to-end solution that involves web crawling, data indexing, microservices development, and auto-instrumentation using OpenTelemetry. Additionally, the demo will integrate OpenAI’s LLM (Large Language Model) to create a **Retrieval-Augmented Generation (RAG)** application.
 
